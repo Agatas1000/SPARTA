@@ -1,0 +1,31 @@
+topology_template:
+  inputs:
+    ## external network
+    external_network_name:
+      type: string
+      default: public
+    ## mgmt network
+    management_network:
+      type: string
+      default: management
+    ## images
+    alpine-image:
+      type: string
+      default: alpine
+    ## default u/p
+    ssh_username:
+      type: string
+      default: alpine
+    ## default flavor
+    flavor:
+      type: string
+      default: m1.tiny
+    ## private keys
+    private_key_path:
+      type: string
+    private_key_name:
+      type: string
+    openstack_config:
+      type: map
+      entry_schema: string
+      default: {}

@@ -1,0 +1,78 @@
+topology_template:
+  node_templates:
+    # router ##
+    gateway:
+      type: aria.openstack.nodes.Router
+      properties:
+        external_network: { get_input: external_network_name }
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: gateway
+        openstack_config: { get_input: openstack_config }
+
+    # networks ##
+    server:
+      type: aria.openstack.nodes.Network
+      properties:
+        resource_id: server
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+
+    server_subnet:
+      type: aria.openstack.nodes.Subnet
+      properties:
+        resource_id: server_subnet
+        subnet:
+          cidr: 10.100.0.0/24
+          enable_dhcp: true
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+      requirements:
+          - router: gateway
+          - network: server
+
+    DMZ:
+      type: aria.openstack.nodes.Network
+      properties:
+        resource_id: DMZ
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+
+    DMZ_subnet:
+      type: aria.openstack.nodes.Subnet
+      properties:
+        resource_id: DMZ_subnet
+        subnet:
+          cidr: 192.168.100.0/24
+          enable_dhcp: true
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+      requirements:
+          - router: gateway
+          - network: DMZ
+
+    IoT:
+      type: aria.openstack.nodes.Network
+      properties:
+        resource_id: IoT
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+
+    IoT_subnet:
+      type: aria.openstack.nodes.Subnet
+      properties:
+        resource_id: IoT_subnet
+        subnet:
+          cidr: 10.200.0.0/24
+          enable_dhcp: true
+        use_external_resource: true
+        create_if_missing: true
+        openstack_config: { get_input: openstack_config }
+      requirements:
+          - router: gateway
+          - network: IoT

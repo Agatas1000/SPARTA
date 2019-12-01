@@ -1,0 +1,43 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+imports:
+  - openstack-plugin.yaml
+  - aria-1.0
+  - config.yaml
+  - openstack-mgmt.yaml
+  - networks.yaml
+
+topology_template:
+  node_templates:    
+    keypair:
+      type: aria.openstack.nodes.KeyPair
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: { get_input: private_key_name }
+        private_key_path: { get_input: private_key_path }
+        openstack_config: { get_input: openstack_config }
+
+    testc_DMZ_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: testc_DMZ_port
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - subnet: DMZ_subnet
+        - network: DMZ
+
+    testc:
+      type: aria.openstack.nodes.Server
+      properties:
+        image: { get_input: alpine-image }
+        flavor: { get_input: flavor }
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: testc
+        management_network_name: { get_input: management_network }
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - key_pair: keypair
+        - port: testc_DMZ_port
