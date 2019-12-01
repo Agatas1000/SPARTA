@@ -1,0 +1,55 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+policy_types:
+ SpartaWorkflow:
+  derived_from: aria.Workflow
+  properties:
+   implementation:
+    type: string
+    default: aria.orchestrator.workflows.plugins.simple_execute
+   interface_name: 
+    type: string
+    default: Sparta
+   operation_name:
+    type: string
+    default: validate
+
+interface_types:
+ sparta.interfaces.Sparta:
+  derived_from: tosca.interfaces.Root
+  validate:
+   implementation: sparta-plugin > sparta_plugin.tasks.customop
+   inputs:
+    output:
+     type: string
+
+node_types:
+ sparta.nodes.Security:
+  derived_from: tosca.nodes.Root
+  properties:
+   level:
+    type: string
+    required: yes
+  requirements:
+    - subject:
+       capability: tosca.capabilities.Node
+       node: tosca.nodes.Root
+       relationship: tosca.relationships.DependsOn
+       occurrences: [ 1, UNBOUNDED ]
+  interfaces:
+   Sparta:
+    type: skeleton.interfaces.Skeleton
+    validate:
+     inputs:
+      output:
+       type: string
+       default: test123
+
+topology_template:
+ policies:
+  sparta-plugin:
+   description: >-
+    Sparta plugin
+   type: aria.Plugin
+   properties:
+    version: 1.0

@@ -29,3 +29,8 @@ topology_template:
       type: map
       entry_schema: string
       default: {}
+
+    ## datalog file
+    outputfile:
+      type: string
+      default: /tmp/sparta_datalog.py

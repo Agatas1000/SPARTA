@@ -1,0 +1,102 @@
+tosca_definitions_version: tosca_simple_yaml_1_0
+
+policy_types:
+ SpartaCreateModelWorkflow:
+  derived_from: aria.Workflow
+  properties:
+   implementation:
+    type: string
+    default: aria.orchestrator.workflows.sparta.createmodel
+   outputfile: 
+    type: string
+    default: /tmp/sparta_datalog.py # { get_input: outputfile }
+ SpartaValidateWorkflow:
+  derived_from: aria.Workflow
+  properties:
+   implementation:
+    type: string
+    default: aria.orchestrator.workflows.sparta.validate
+   modelfile:
+    type: string
+    default: /tmp/sparta_datalog.py # { get_input: outputfile }
+
+interface_types:
+ sparta.interfaces.Sparta:
+  derived_from: tosca.interfaces.Root
+  createmodel:
+   implementation: sparta-plugin > sparta_plugin.tasks.createmodel
+   inputs:
+    outputfile:
+     type: string
+
+node_types:
+ sparta.nodes.Root:
+  derived_from: tosca.nodes.Root
+  properties:
+   behavior:
+    type: map
+    entry_schema:
+     type: string
+    required: no
+
+ sparta.nodes.SecurityLabel:
+  derived_from: sparta.nodes.Root
+  properties:
+   level:
+    # 0: insecure - 10: very secure
+    type: integer
+    required: yes
+   behavior:
+    type: map
+    entry_schema:
+     type: string
+    required: no
+    default: 
+     isConnected: "+ SecurityLabel('$this=>subject{tosca_id}', '$this[level]')"
+  requirements:
+    - subject:
+       capability: tosca.capabilities.Node
+       node: tosca.nodes.Root
+       relationship: tosca.relationships.DependsOn
+       occurrences: [ 1, UNBOUNDED ]
+  interfaces:
+   Sparta:
+    type: sparta.interfaces.Sparta
+    createmodel:
+     inputs:
+      outputfile:
+       type: string
+       default: /tmp/sparta_datalog.py # { get_input: outputfile }
+
+ sparta.nodes.System:
+  derived_from: sparta.nodes.Root
+  properties:
+   behavior:
+    type: map
+    entry_schema:
+     type: string
+    required: no
+    default: 
+     isConnected: "+ isConnected('$this=>host{tosca_id}', '$this=>host=>port=>subnet{tosca_id}')"
+  requirements:
+   - host:
+      capability: tosca.capabilities.Container
+      node: tosca.nodes.Compute
+      relationship: tosca.relationships.HostedOn 
+  interfaces:
+   Sparta:
+    type: sparta.interfaces.Sparta
+    createmodel:
+     inputs:
+      outputfile:
+       type: string
+       default: /tmp/sparta_datalog.py # { get_input: outputfile }
+
+topology_template:
+ policies:
+  sparta-plugin:
+   description: >-
+    Sparta plugin
+   type: aria.Plugin
+   properties:
+    version: 1.0
