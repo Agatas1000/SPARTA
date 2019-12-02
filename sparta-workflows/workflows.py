@@ -47,32 +47,17 @@ def validate(ctx, graph, modelfile):
     sys.stderr = old_stderr
 
     if not res.getvalue()[:2] == "[]":
-        print("\n\033[0m\033[91m**** Unsafe connection found *****\033[0m")
-        # print(res.getvalue())
-        # print("\n\n")
+        print("\n\033[0m\033[91m**** Unsafe connections found *****\033[0m")
+        print(res.getvalue())
+        print("\n\n")
 
-    l = 0
     u = open(modelfile + ".log", "w")
+    l = 0
     for r in res.getvalue().splitlines():
         if l > 1:
-            compute = r.split("|")[0].strip() # [:-1]
-            network = r.split("|")[1].strip() # [1:]
-            # print(node + " - " + network)
-
-            for node in ctx.model.node.iter():
-                if compute in node.attributes['tosca_id']:
-                    compute_ip = node.outbound_relationships[0].target_node.attributes['ip']
-                    compute_ip2 = node.outbound_relationships[0].target_node.attributes['networks'][network.split('_')[0]][0]
-
-                if network in node.attributes['tosca_id']:
-                    network_ip = node.properties['subnet']['cidr']
-
-            print("{} ({}, {}) -> {} ({})".format(compute.split('_')[0], compute_ip, compute_ip2, network.split('_')[0], network_ip))
-            u.write("{},{},{},{},{}\n".format(compute, compute_ip, network, network_ip, compute_ip2))
-
+            u.write(r + "\n")
         l=l+1
     u.close()
-    print("\n\n")
 
 @workflow
 def enforce(ctx, graph, modelfile):
@@ -82,11 +67,29 @@ def enforce(ctx, graph, modelfile):
     env.sudo_user = "root"
 
     log = open(modelfile + '.log', 'r')
-    for l in log.read().splitlines():
-        print ("a: " + l.split(",")[1])
 
-        env.hosts = [l.split(",")[1]]
-        out = execute(runLinux, l.split(",")[4] )
+    for l in log.read().splitlines():
+        compute = l.split("|")[0].strip()  # [:-1]
+        network = l.split("|")[1].strip()  # [1:]
+
+        for node in ctx.model.node.iter():
+            if compute in node.attributes['tosca_id']:
+                compute_ip = node.outbound_relationships[0].target_node.attributes['ip']
+                compute_ip2 = node.outbound_relationships[0].target_node.attributes['networks'][network.split('_')[0]][
+                    0]
+
+            if network in node.attributes['tosca_id']:
+                network_ip = node.properties['subnet']['cidr']
+
+        print("\033[92m{} ({}, {}) -> {} ({})\033[0m".format(compute.split('_')[0], compute_ip, compute_ip2, network.split('_')[0],
+                                              network_ip))
+
+        env.hosts = [compute_ip]
+        out = execute(runLinux, compute_ip2)
+
+    log.close()
+
+
 
 def runLinux(ip):
     sudo("int=$(ifconfig | grep -B 1 {} | grep eth | cut -d' ' -f 1); echo \"Shutting down $int..\"; ifconfig $int down".format(ip))

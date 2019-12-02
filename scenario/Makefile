@@ -51,9 +51,14 @@ sparta-delete:
 
 sparta-destroy: sparta-uninstall sparta-delete
 
+### Workflows ###
+
 sparta-createmodel:
 	$(command) executions start createmodel -s sparta_service
 
 sparta-validate:
 	$(command) executions start validate -s sparta_service
+
+sparta-enforce:
+	$(command) executions start enforce -s sparta_service
 
