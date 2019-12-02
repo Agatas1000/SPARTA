@@ -6,6 +6,7 @@ imports:
   - aria-1.0
   - openstack-mgmt.yaml
   - networks.yaml
+  - computes.yaml
 
 topology_template:
   policies:
@@ -24,53 +25,47 @@ topology_template:
         private_key_path: { get_input: private_key_path }
         openstack_config: { get_input: openstack_config }
 
-    level10:
+    IoT1:
+     type: sparta.nodes.System
+     requirements:
+       - host: IoT1_Compute
+
+    IoT2:
+     type: sparta.nodes.System
+     requirements:
+       - host: IoT2_Compute
+
+    IoT3:
+     type: sparta.nodes.System
+     requirements:
+       - host: IoT3_Compute
+
+    level9:
       type: sparta.nodes.SecurityLabel
       properties:
-       level: 10
+       level: 9
       requirements:
-       - subject: sdl-mgmt-subnet
+       - subject: IoT_subnet
+
+    level8:
+      type: sparta.nodes.SecurityLabel
+      properties:
+       level: 8
+      requirements:
+       - subject: IoT1
+       - subject: IoT2
+       - subject: IoT3
 
     level5:
       type: sparta.nodes.SecurityLabel
       properties:
        level: 5
       requirements:
-       - subject: testc
+       - subject: Server_subnet
 
-    level1:
+    level3:
       type: sparta.nodes.SecurityLabel
       properties:
-       level: 1
+       level: 3
       requirements:
        - subject: DMZ_subnet
-
-    testc_system:
-     type: sparta.nodes.System
-     requirements:
-       - host: testc
-
-    testc_DMZ_port:
-      type: aria.openstack.nodes.Port
-      properties:
-        use_external_resource: true
-        create_if_missing: true
-        resource_id: testc_DMZ_port
-        openstack_config: { get_input: openstack_config }
-      requirements:
-        - subnet: DMZ_subnet
-        - network: DMZ
-
-    testc:
-      type: aria.openstack.nodes.Server
-      properties:
-        image: { get_input: alpine-image }
-        flavor: { get_input: flavor }
-        use_external_resource: true
-        create_if_missing: true
-        resource_id: testc
-        management_network_name: { get_input: management_network }
-        openstack_config: { get_input: openstack_config }
-      requirements:
-        - key_pair: keypair
-        - port: testc_DMZ_port

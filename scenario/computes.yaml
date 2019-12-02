@@ -1,0 +1,100 @@
+topology_template:
+  node_templates:
+    Device1_Compute_DMZ_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: Device1_Compute_DMZ_port
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - subnet: DMZ_subnet
+        - network: DMZ
+
+    Device1_Compute_IoT_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: Device1_IoT_DMZ_port
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - subnet: IoT_subnet
+        - network: IoT
+
+    Device1_Compute:
+      type: aria.openstack.nodes.Server
+      properties:
+        image: { get_input: alpine-image }
+        flavor: { get_input: flavor }
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: Device1_Compute
+        management_network_name: { get_input: management_network }
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - key_pair: keypair
+        - port: Device1_Compute_DMZ_port
+        - port: Device1_IoT_DMZ_port
+
+    Device2_Compute_Server_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: Device2_Compute_Server_port
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - subnet: Server_subnet
+        - network: Server
+
+    Device2_Compute_IoT_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: Device2_Compute_IoT_port
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - subnet: IoT_subnet
+        - network: IoT
+
+    Device2_Compute:
+      type: aria.openstack.nodes.Server
+      properties:
+        image: { get_input: alpine-image }
+        flavor: { get_input: flavor }
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: Device2_Compute
+        management_network_name: { get_input: management_network }
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - key_pair: keypair
+        - port: Device2_Compute_Server_port
+        - port: Device2_Compute_IoT_port
+
+    Device3_Compute_IoT_port:
+      type: aria.openstack.nodes.Port
+      properties:
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: Device3_Compute_IoT_port
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - subnet: IoT_subnet
+        - network: IoT
+
+    Device3_Compute:
+      type: aria.openstack.nodes.Server
+      properties:
+        image: { get_input: alpine-image }
+        flavor: { get_input: flavor }
+        use_external_resource: true
+        create_if_missing: true
+        resource_id: Device3_Compute
+        management_network_name: { get_input: management_network }
+        openstack_config: { get_input: openstack_config }
+      requirements:
+        - key_pair: keypair
+        - port: Device3_Compute_IoT_port

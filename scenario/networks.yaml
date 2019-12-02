@@ -11,18 +11,18 @@ topology_template:
         openstack_config: { get_input: openstack_config }
 
     # networks ##
-    server:
+    Server:
       type: aria.openstack.nodes.Network
       properties:
-        resource_id: server
+        resource_id: Server
         use_external_resource: true
         create_if_missing: true
         openstack_config: { get_input: openstack_config }
 
-    server_subnet:
+    Server_subnet:
       type: aria.openstack.nodes.Subnet
       properties:
-        resource_id: server_subnet
+        resource_id: Server_subnet
         subnet:
           cidr: 10.100.0.0/24
           enable_dhcp: true
@@ -31,7 +31,7 @@ topology_template:
         openstack_config: { get_input: openstack_config }
       requirements:
           - router: gateway
-          - network: server
+          - network: Server
 
     DMZ:
       type: aria.openstack.nodes.Network

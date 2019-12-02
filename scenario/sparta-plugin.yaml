@@ -1,6 +1,7 @@
 tosca_definitions_version: tosca_simple_yaml_1_0
 
 policy_types:
+ # create model
  SpartaCreateModelWorkflow:
   derived_from: aria.Workflow
   properties:
@@ -10,6 +11,7 @@ policy_types:
    outputfile: 
     type: string
     default: /tmp/sparta_datalog.py # { get_input: outputfile }
+ # validate model
  SpartaValidateWorkflow:
   derived_from: aria.Workflow
   properties:
@@ -23,6 +25,7 @@ policy_types:
 interface_types:
  sparta.interfaces.Sparta:
   derived_from: tosca.interfaces.Root
+  # create datalaog model from behavior properties of node instances
   createmodel:
    implementation: sparta-plugin > sparta_plugin.tasks.createmodel
    inputs:
@@ -77,7 +80,7 @@ node_types:
      type: string
     required: no
     default: 
-     isConnected: "+ isConnected('$this=>host{tosca_id}', '$this=>host=>port=>subnet{tosca_id}')"
+     isConnected: "+ isConnected('$this{tosca_id}', '$this=>host=>port=>subnet{tosca_id}')"
   requirements:
    - host:
       capability: tosca.capabilities.Container

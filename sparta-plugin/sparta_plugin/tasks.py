@@ -20,9 +20,18 @@
 # Cloudify imports
 from cloudify import ctx
 from cloudify.decorators import operation
+from compiler import AccessPatternCompiler
 
 @operation
-def compile(outputfile, **kwargs):
-    print('output: ' + outputfile) 
-    print('Node: ' + ctx._node._node.nodes[0].name)
-    ctx.logger.info('Finished running the Sparta validate operation on ' + ctx._node._node.nodes[0].name)
+def createmodel(outputfile, **kwargs):
+    f = open(outputfile, "a")
+
+    if 'behavior' in ctx._node._node.nodes[0].properties.keys():
+        for key in ctx._node._node.nodes[0].properties['behavior']._value:
+            behavior = ctx._node._node.nodes[0].properties['behavior']._value[key]
+            f.write("# " + ctx._node._node.nodes[0].name + "\n")
+            for c in AccessPatternCompiler().compile(behavior, ctx._node._node.nodes[0]):
+                print(c)
+                f.write(c + "\n")
+
+    f.close()
