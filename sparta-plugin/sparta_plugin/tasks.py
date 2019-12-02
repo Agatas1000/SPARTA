@@ -24,6 +24,9 @@ from compiler import AccessPatternCompiler
 
 @operation
 def createmodel(outputfile, **kwargs):
+    #print('output: ' + outputfile)
+    #print('Node: ' + ctx._node._node.nodes[0].name)
+    #ctx.logger.info('Finished running the Sparta validate operation on ' + ctx._node._node.nodes[0].name)
     f = open(outputfile, "a")
 
     if 'behavior' in ctx._node._node.nodes[0].properties.keys():

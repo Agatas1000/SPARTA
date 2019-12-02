@@ -14,6 +14,8 @@ topology_template:
       type: SpartaCreateModelWorkflow
     validate:
       type: SpartaValidateWorkflow
+    enforce:
+      type: SpartaEnforceWorkflow
 
   node_templates:    
     keypair:
@@ -25,20 +27,20 @@ topology_template:
         private_key_path: { get_input: private_key_path }
         openstack_config: { get_input: openstack_config }
 
-    IoT1:
-     type: sparta.nodes.System
-     requirements:
-       - host: IoT1_Compute
+    Device1:
+      type: sparta.nodes.System
+      requirements:
+        - host: Device1_Compute
 
-    IoT2:
+    Device2:
      type: sparta.nodes.System
      requirements:
-       - host: IoT2_Compute
+       - host: Device2_Compute
 
-    IoT3:
+    Device3:
      type: sparta.nodes.System
      requirements:
-       - host: IoT3_Compute
+       - host: Device3_Compute
 
     level9:
       type: sparta.nodes.SecurityLabel
@@ -48,13 +50,13 @@ topology_template:
        - subject: IoT_subnet
 
     level8:
-      type: sparta.nodes.SecurityLabel
-      properties:
-       level: 8
-      requirements:
-       - subject: IoT1
-       - subject: IoT2
-       - subject: IoT3
+     type: sparta.nodes.SecurityLabel
+     properties:
+      level: 8
+     requirements:
+      - subject: Device1
+      - subject: Device2
+      - subject: Device3
 
     level5:
       type: sparta.nodes.SecurityLabel

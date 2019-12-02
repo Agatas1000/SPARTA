@@ -35,7 +35,7 @@ topology_template:
       requirements:
         - key_pair: keypair
         - port: Device1_Compute_DMZ_port
-        - port: Device1_IoT_DMZ_port
+        - port: Device1_Compute_IoT_port
 
     Device2_Compute_Server_port:
       type: aria.openstack.nodes.Port

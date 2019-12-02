@@ -1,0 +1,12 @@
+--- /usr/local/lib/python2.7/site-packages/aria/orchestrator/workflow_runner.py
++++ /root/workflow_runner.py
+@@ -172,7 +172,8 @@
+         sys.path.append(service_template_resources_path)
+ 
+         try:
+-            workflow_fn = import_fullname(workflow.function)
++            #workflow_fn = import_fullname(workflow.function)
++            workflow_fn = import_fullname(workflow.function.encode('ascii', 'ignore'))
+         except ImportError:
+             raise exceptions.WorkflowImplementationNotFoundError(
+                 'Could not find workflow {0} function at {1}'.format(

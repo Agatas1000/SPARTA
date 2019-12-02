@@ -1,0 +1,12 @@
+--- /usr/local/lib/python2.7/site-packages/aria_extension_tosca/profiles/tosca-simple-1.0/nodes.yaml
++++ /root/nodes.yaml
+@@ -90,7 +90,7 @@
+     capabilities:
+       host:
+          type: tosca.capabilities.Container
+-         valid_source_types: [ tosca.nodes.SoftwareComponent ]
++         # valid_source_types: [ tosca.nodes.SoftwareComponent ]
+       binding:
+          type: tosca.capabilities.network.Bindable
+       os:
+

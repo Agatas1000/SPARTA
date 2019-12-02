@@ -1,5 +1,5 @@
 # docker
-image_name=enriquez/aria-openstack
+image_name=enriquez/aria-sparta
 volume=~/sparta
 command=docker run -it -v $(volume):/aria/ $(image_name) 
 
@@ -18,8 +18,15 @@ project_id=2615a79ad84c41118829a8e82e1d9c0c
 
 sparta-create:
 	test -d $(volume)/scenario/ || mkdir $(volume)/scenario/
+	rm -f $(volume)/scenario/*.yaml
 	cp *.yaml $(volume)/scenario/
 	$(command) service-templates store /aria/scenario/sparta.yaml sparta
+	$(command) services create -t sparta sparta_service -i "private_key_path=$(key_path);private_key_name=$(key_name)" -vvv
+
+sparta-create-servicetemplate:
+	$(command) service-templates store /aria/scenario/sparta.yaml sparta
+
+sparta-create-service:
 	$(command) services create -t sparta sparta_service -i "private_key_path=$(key_path);private_key_name=$(key_name)" -vvv
 
 sparta-install:
@@ -29,9 +36,24 @@ sparta-install:
 sparta-uninstall:
 	$(command) executions start uninstall -s sparta_service -vvv
 
+sparta-delete-servicetemplate:
+	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
+	$(command) service-templates delete sparta
+
+sparta-delete-service:
+	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
+	$(command) services delete sparta_service -f
+
 sparta-delete:
 	@echo -n "Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
 	$(command) services delete sparta_service -f
 	$(command) service-templates delete sparta
 
 sparta-destroy: sparta-uninstall sparta-delete
+
+sparta-createmodel:
+	$(command) executions start createmodel -s sparta_service
+
+sparta-validate:
+	$(command) executions start validate -s sparta_service
+

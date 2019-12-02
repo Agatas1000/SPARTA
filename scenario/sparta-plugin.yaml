@@ -10,7 +10,7 @@ policy_types:
     default: aria.orchestrator.workflows.sparta.createmodel
    outputfile: 
     type: string
-    default: /tmp/sparta_datalog.py # { get_input: outputfile }
+    default: /aria/sparta_datalog.py # { get_input: outputfile }
  # validate model
  SpartaValidateWorkflow:
   derived_from: aria.Workflow
@@ -20,7 +20,17 @@ policy_types:
     default: aria.orchestrator.workflows.sparta.validate
    modelfile:
     type: string
-    default: /tmp/sparta_datalog.py # { get_input: outputfile }
+    default: /aria/sparta_datalog.py # { get_input: outputfile }
+ # enforce
+ SpartaEnforceWorkflow:
+  derived_from: aria.Workflow
+  properties:
+   implementation:
+    type: string
+    default: aria.orchestrator.workflows.sparta.enforce
+   modelfile:
+    type: string
+    default: /aria/sparta_datalog.py # { get_input: outputfile }
 
 interface_types:
  sparta.interfaces.Sparta:
@@ -69,7 +79,7 @@ node_types:
      inputs:
       outputfile:
        type: string
-       default: /tmp/sparta_datalog.py # { get_input: outputfile }
+       default: /aria/sparta_datalog.py # { get_input: outputfile }
 
  sparta.nodes.System:
   derived_from: sparta.nodes.Root
@@ -93,7 +103,7 @@ node_types:
      inputs:
       outputfile:
        type: string
-       default: /tmp/sparta_datalog.py # { get_input: outputfile }
+       default: /aria/sparta_datalog.py # { get_input: outputfile }
 
 topology_template:
  policies:

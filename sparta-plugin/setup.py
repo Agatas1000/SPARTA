@@ -25,5 +25,5 @@ setup(
     packages=['sparta_plugin'],
     license='LICENSE',
     zip_safe=False,
-    install_requires=["cloudify-plugins-common==3.1", "pyDatalog==0.17.1"]
+    install_requires=["cloudify-plugins-common==3.1", "pyDatalog==0.17.1", "lark-parser==0.6.7", "Fabric==1.14.1"]
 )
