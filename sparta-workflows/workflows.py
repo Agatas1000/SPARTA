@@ -12,7 +12,7 @@ def createmodel(ctx, graph, outputfile):
     f.close()
     for node in ctx.model.node.iter():
         try:
-            graph.add_tasks(task.OperationTask(node, 'Sparta', 'createmodel'))
+            graph.add_tasks(task.OperationTask(node, 'Sparta', 'compilebehavior'))
         except TaskException:
             pass
 

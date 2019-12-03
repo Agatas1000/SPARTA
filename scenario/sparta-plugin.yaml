@@ -35,9 +35,9 @@ policy_types:
 interface_types:
  sparta.interfaces.Sparta:
   derived_from: tosca.interfaces.Root
-  # create datalaog model from behavior properties of node instances
-  createmodel:
-   implementation: sparta-plugin > sparta_plugin.tasks.createmodel
+  # compile the Access Pattern Language used in the behavior property 
+  compilebehavior:
+   implementation: sparta-plugin > sparta_plugin.tasks.compilebehavior
    inputs:
     outputfile:
      type: string
@@ -75,7 +75,7 @@ node_types:
   interfaces:
    Sparta:
     type: sparta.interfaces.Sparta
-    createmodel:
+    compilebehavior:
      inputs:
       outputfile:
        type: string
@@ -99,7 +99,7 @@ node_types:
   interfaces:
    Sparta:
     type: sparta.interfaces.Sparta
-    createmodel:
+    compilebehavior:
      inputs:
       outputfile:
        type: string
