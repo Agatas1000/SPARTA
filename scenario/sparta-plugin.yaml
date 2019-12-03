@@ -65,7 +65,7 @@ node_types:
      type: string
     required: no
     default: 
-     isConnected: "+ SecurityLabel('$this=>subject{tosca_id}', '$this[level]')"
+     SecurityLabel: "+ SecurityLabel('$this=>subject{tosca_id}', '$this[level]')"
   requirements:
     - subject:
        capability: tosca.capabilities.Node

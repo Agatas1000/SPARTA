@@ -1,35 +1,71 @@
 tosca_definitions_version: tosca_simple_yaml_1_0
 
 policy_types:
- SpartaWorkflow:
+ # create model
+ SpartaCreateModelWorkflow:
   derived_from: aria.Workflow
   properties:
    implementation:
     type: string
-    default: aria.orchestrator.workflows.plugins.simple_execute
-   interface_name: 
+    default: aria.orchestrator.workflows.sparta.createmodel
+   outputfile: 
     type: string
-    default: Sparta
-   operation_name:
+    default: /aria/sparta_datalog.py # { get_input: outputfile }
+ # validate model
+ SpartaValidateWorkflow:
+  derived_from: aria.Workflow
+  properties:
+   implementation:
     type: string
-    default: validate
+    default: aria.orchestrator.workflows.sparta.validate
+   modelfile:
+    type: string
+    default: /aria/sparta_datalog.py # { get_input: outputfile }
+ # enforce
+ SpartaEnforceWorkflow:
+  derived_from: aria.Workflow
+  properties:
+   implementation:
+    type: string
+    default: aria.orchestrator.workflows.sparta.enforce
+   modelfile:
+    type: string
+    default: /aria/sparta_datalog.py # { get_input: outputfile }
 
 interface_types:
  sparta.interfaces.Sparta:
   derived_from: tosca.interfaces.Root
-  validate:
-   implementation: sparta-plugin > sparta_plugin.tasks.customop
+  # compile the Access Pattern Language used in the behavior property 
+  compilebehavior:
+   implementation: sparta-plugin > sparta_plugin.tasks.compilebehavior
    inputs:
-    output:
+    outputfile:
      type: string
 
 node_types:
- sparta.nodes.Security:
+ sparta.nodes.Root:
   derived_from: tosca.nodes.Root
   properties:
+   behavior:
+    type: map
+    entry_schema:
+     type: string
+    required: no
+
+ sparta.nodes.SecurityLabel:
+  derived_from: sparta.nodes.Root
+  properties:
    level:
-    type: string
+    # 0: insecure - 10: very secure
+    type: integer
     required: yes
+   behavior:
+    type: map
+    entry_schema:
+     type: string
+    required: no
+    default: 
+     isConnected: "+ SecurityLabel('$this=>subject{tosca_id}', '$this[level]')"
   requirements:
     - subject:
        capability: tosca.capabilities.Node
@@ -38,12 +74,36 @@ node_types:
        occurrences: [ 1, UNBOUNDED ]
   interfaces:
    Sparta:
-    type: skeleton.interfaces.Skeleton
-    validate:
+    type: sparta.interfaces.Sparta
+    compilebehavior:
      inputs:
-      output:
+      outputfile:
        type: string
-       default: test123
+       default: /aria/sparta_datalog.py # { get_input: outputfile }
+
+ sparta.nodes.System:
+  derived_from: sparta.nodes.Root
+  properties:
+   behavior:
+    type: map
+    entry_schema:
+     type: string
+    required: no
+    default: 
+     isConnected: "+ isConnected('$this{tosca_id}', '$this=>host=>port=>subnet{tosca_id}')"
+  requirements:
+   - host:
+      capability: tosca.capabilities.Container
+      node: tosca.nodes.Compute
+      relationship: tosca.relationships.HostedOn 
+  interfaces:
+   Sparta:
+    type: sparta.interfaces.Sparta
+    compilebehavior:
+     inputs:
+      outputfile:
+       type: string
+       default: /aria/sparta_datalog.py # { get_input: outputfile }
 
 topology_template:
  policies:
